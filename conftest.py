@@ -19,10 +19,11 @@ def courier_payload():
 def registered_courier():
     courier_api = CourierApi()
     login_pass = courier_api.register_new_courier_and_return_login_password()
+    courier = {"login": login_pass[0], "password": login_pass[1]}
 
-    yield login_pass
+    yield courier
 
-    login_response = courier_api.login_courier(login_pass[0], login_pass[1])
+    login_response = courier_api.login_courier(courier["login"], courier["password"])
     if login_response.status_code == 200:
         courier_id = login_response.json()["id"]
         courier_api.delete_courier(courier_id)
