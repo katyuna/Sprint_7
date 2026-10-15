@@ -1,57 +1,51 @@
-import allure
-from helpers.data_generator import generate_random_string
 import pytest
-
-from api import base_api
+import allure
 from api.base_api import BaseApi
-from helpers.assertions import assert_status_code
-from helpers .routes import CREATE_COURIER_URL
+from helpers.assertions import assert_status_code, assert_response_error_message, assert_response_json_data
+from helpers.routes import CREATE_COURIER_URL, BASE_URL
 
 
 class TestCreateCourier:
-    base_api = BaseApi()
+    base_api = BaseApi(BASE_URL)
 
     @allure.title("Курьера можно создать.")
     @allure.description("При передаче валидных данных курьер успешно создается "
                         "и возвращается статус 201")
-    def test_create_courier_successful_and_status_code_is_201_created(self):
-        login = generate_random_string(10)
-        password = generate_random_string(10)
-        first_name = generate_random_string(10)
-
-        payload = {
-            "login": login,
-            "password": password,
-            "firstName": first_name
-        }
-
-        assert assert_status_code(
-            base_api.send_get_request(CREATE_COURIER_URL, payload), 201)
+    def test_create_courier_successful_and_status_code_is_201_created(self, courier_payload):
+        response = self.base_api.send_post_request(CREATE_COURIER_URL, json=courier_payload)
+        assert_status_code(response, 201)
 
     @allure.title("Нельзя создать двух одинаковых курьеров.")
-    def test_it_is_impossible_to_create_two_same_couriers(self):
-        pass
+    def test_it_is_impossible_to_create_two_same_couriers(self, courier_payload):
+        response = self.base_api.send_post_request(CREATE_COURIER_URL, json=courier_payload)
+        response_double = self.base_api.send_post_request(CREATE_COURIER_URL, json=courier_payload)
+        assert_status_code(response, 201)
+        assert_status_code(response_double, 409)
 
     @allure.title("Чтобы создать курьера, нужно передать в ручку все обязательные поля.")
-    def test_it_is_obligatorily_to_send_all_field_to_create_courier(self):
-        pass
+    def test_it_is_obligatorily_to_send_all_field_to_create_courier(self, courier_payload):
+            payload_login_password = {"login": courier_payload["login"], "password": courier_payload["password"]}
+            response = self.base_api.send_post_request(CREATE_COURIER_URL, json=payload_login_password)
+            assert_status_code(response, 201)
 
+    @allure.title("Если одного из обязательных полей нет, запрос возвращает ошибку.")
+    @pytest.mark.parametrize("missing_field", ["login", "password"])
+    def test_create_courier_without_required_field_returns_400(self, courier_payload, missing_field):
+         payload = courier_payload.copy()
+         del payload[missing_field]
+         response = self.base_api.send_post_request(CREATE_COURIER_URL, json=payload)
+         assert_status_code(response, 400)
+         assert_response_error_message(response, "Недостаточно данных для создания учетной записи")
 
-
-
+    
     @allure.title("Успешный запрос возвращает {\"ok\":true}.")
-    def test_success_request_returns_ok_true(self):
-        pass
-
-    @allure.title("Если одного из полей нет, запрос возвращает ошибку.")
-    def rrr(self):
-        pass
+    def test_success_request_returns_ok_true(self, courier_payload):
+        response = self.base_api.send_post_request(CREATE_COURIER_URL, json=courier_payload)
+        assert_response_json_data(response, {"ok": True})
+    
 
     @allure.title("Если создать пользователя с логином, который уже есть, возвращается ошибка.")
     def sdd(self):
         pass
 
-    @allure.title("Нельзя создать двух одинаковых курьеров.")
-    def ggg(self):
-        pass
 

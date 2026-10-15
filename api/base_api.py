@@ -20,7 +20,7 @@ class BaseApi:
         response = requests.put(url, json=json)
         return response
 
-    def send_delete_request(self, endpoint):
+    def send_delete_request(self, endpoint, json=None):
         url = self.base_url + endpoint
-        response = requests.delete(url)
+        response = requests.delete(url, json=json)
         return response
