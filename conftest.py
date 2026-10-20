@@ -19,6 +19,7 @@ def courier_payload():
 def registered_courier():
     courier_api = CourierApi()
     login_pass = courier_api.register_new_courier_and_return_login_password()
+    assert login_pass, "Не удалось зарегистрировать курьера в фикстуре"
     courier = {"login": login_pass[0], "password": login_pass[1]}
 
     yield courier
