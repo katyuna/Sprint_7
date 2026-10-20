@@ -46,3 +46,6 @@ dist/
 
 # Local debug files
 /debug/
+
+# Local debug notes
+debug_log.md

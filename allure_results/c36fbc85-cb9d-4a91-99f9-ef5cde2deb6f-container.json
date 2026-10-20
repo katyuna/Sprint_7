@@ -1,0 +1,1 @@
+{"uuid": "80a36a28-be1c-4956-a03f-b12254409d74", "children": ["eb6fb9b2-0204-4f71-bb97-b7bc5568b551"], "befores": [{"name": "registered_courier", "status": "passed", "start": 1792475455082, "stop": 1792475455284}], "afters": [{"name": "registered_courier::0", "status": "passed", "start": 1792475455487, "stop": 1792475455881}], "start": 1792475455082, "stop": 1792475455881}
